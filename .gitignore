@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data
+data/*
+!data/.gitkeep
+
+# Results
+results/*
+!results/.gitkeep
+
+# macOS
+.DS_Store
+
+# C++
+build/
+cmake-build-*/
+*.o
+*.out
+
+# IDE
+.vscode/
+.idea/
