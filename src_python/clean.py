@@ -3,14 +3,20 @@ from pathlib import Path
 
 import pandas as pd
 
-RAW_FILE = Path("data/trades_page_0.json")
-OUTPUT_FILE = Path("data/trades.parquet")
+RAW_DATA_DIR=Path("data/raw")
+OUTPUT_FILE = Path("data/processed/trades.parquet")
 
 def load_raw_trades():
-    with open(RAW_FILE) as file:
-        data = json.load(file)
+    trades = []
 
-    return data["trades"]
+    for file in RAW_DATA_DIR.glob("trades_page*.json"):
+
+        with open(file) as f:
+            data = json.load(f)
+
+        trades.extend(data["trades"])
+
+    return trades
 
 def clean_trades(trades):
     df = pd.DataFrame(trades)
@@ -28,6 +34,7 @@ def clean_trades(trades):
     return df
 
 def save_trades(df):
+
     df.to_parquet(OUTPUT_FILE, index=False)
 
     print(f"Saved {len(df)} trades to {OUTPUT_FILE}")

@@ -6,14 +6,14 @@ import requests
 from dotenv import load_dotenv
 
 
-load_dotenv()
+load_dotenv() # reads .env file
 
 BASE_URL = "https://www.bargo.ai/free-apis/congress/v1"
 API_KEY = os.getenv("BARGO_API_KEY")
 
-RAW_DATA_DIR = Path("data")
+RAW_DATA_DIR = Path("data/raw")
 
-def fetch_trades(limit=100, page=0):
+def fetch_trades(limit=250, page=0):
     # Fetch page of congress trades from bargo
 
     if not API_KEY:
@@ -31,17 +31,15 @@ def fetch_trades(limit=100, page=0):
         timeout=30,
     )
 
-    response.raise_for_status()
+    response.raise_for_status() # checks if https error
 
     return response.json()
 
 
-def save_raw_data(data, filename="trades_page_0.json"):
+def save_raw_data(data, page):
+
     # Save as json
-
-    RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-    output_path = RAW_DATA_DIR / filename
+    output_path = RAW_DATA_DIR / f"trades_page{page}.json"
 
     with open(output_path, "w") as f:
         json.dump(data, f, indent=2)
@@ -50,5 +48,15 @@ def save_raw_data(data, filename="trades_page_0.json"):
 
 
 if __name__ == "__main__":
-    data = fetch_trades(limit=100)
-    save_raw_data(data)
+
+    for page in range(4):
+
+        data = fetch_trades(
+            limit=250,
+            page=page
+        )
+
+        save_raw_data(data, page)
+
+        if len(data["trades"]) < 250:
+            break
